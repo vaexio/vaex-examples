@@ -1,4 +1,4 @@
-vaex-core>=0.5.1
+vaex-core>=0.6
 vaex-hdf5
 vaex-arrow
 vaex-jupyter
