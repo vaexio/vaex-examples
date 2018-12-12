@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -ex
+
+# keep git happy
+git config --global user.email "bin@der.com"
+git config --global user.name "Bin Der"
+
+
+# jupyter labextension install @jupyter-widgets/jupyterlab-manager jupyter-threejs ipyvolume -bqplot -no-build
+# jupyter lab build
