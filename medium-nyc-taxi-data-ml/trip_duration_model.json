@@ -1,0 +1,405 @@
+{
+  "virtual_columns": {
+    "pickup_longitude": "fillna(__pickup_longitude, value=-73.99)",
+    "pickup_latitude": "fillna(__pickup_latitude, value=40.76)",
+    "dropoff_longitude": "fillna(__dropoff_longitude, value=-73.99)",
+    "dropoff_latitude": "fillna(__dropoff_latitude, value=40.76)",
+    "trip_duration_min": "((dropoff_datetime - pickup_datetime) / var_time_delta)",
+    "trip_speed_mph": "(trip_distance / ((dropoff_datetime - pickup_datetime) / var_time_delta_1))",
+    "pickup_time": "(dt_hour(pickup_datetime) + (dt_minute(pickup_datetime) / 60.0))",
+    "pickup_day": "dt_dayofweek(pickup_datetime)",
+    "pickup_month": "(dt_month(pickup_datetime) - 1)",
+    "pickup_is_weekend": "astype((pickup_day >= 5), 'int')",
+    "arc_distance": "_jit(dropoff_longitude, dropoff_latitude, pickup_longitude, pickup_latitude)",
+    "direction_angle": "_jit_1(pickup_longitude, dropoff_longitude, dropoff_latitude, pickup_latitude)",
+    "PCA_pickup_0": "(pickup_longitude - -73.98050062520188) * 0.6069992309107869 + (pickup_latitude - 40.75178314115146) * 0.7947024183137441",
+    "PCA_pickup_1": "(pickup_longitude - -73.98050062520188) * -0.7947024183137441 + (pickup_latitude - 40.75178314115146) * 0.6069992309107869",
+    "PCA_dropoff_0": "(dropoff_longitude - -73.97882989198045) * 0.5650223038924116 + (dropoff_latitude - 40.75225101275124) * 0.8250756305358384",
+    "PCA_dropoff_1": "(dropoff_longitude - -73.97882989198045) * -0.8250756305358384 + (dropoff_latitude - 40.75225101275124) * 0.5650223038924116",
+    "pickup_time_x": "cos(((6.283185307179586 * pickup_time) / 24))",
+    "pickup_time_y": "sin(((6.283185307179586 * pickup_time) / 24))",
+    "pickup_day_x": "cos(((6.283185307179586 * pickup_day) / 7))",
+    "pickup_day_y": "sin(((6.283185307179586 * pickup_day) / 7))",
+    "pickup_month_x": "cos(((6.283185307179586 * pickup_month) / 12))",
+    "pickup_month_y": "sin(((6.283185307179586 * pickup_month) / 12))",
+    "direction_angle_x": "cos(((6.283185307179586 * direction_angle) / 360))",
+    "direction_angle_y": "sin(((6.283185307179586 * direction_angle) / 360))",
+    "standard_scaled_arc_distance": "((arc_distance - 1.153884187975571) / 0.8964882227200455)",
+    "predicted_duration_min": "incremental_prediction_function(PCA_pickup_0, PCA_pickup_1, PCA_dropoff_0, PCA_dropoff_1, standard_scaled_arc_distance, pickup_time_x, pickup_day_x, pickup_month_x, direction_angle_x, pickup_time_y, pickup_day_y, pickup_month_y, direction_angle_y, pickup_is_weekend)",
+    "pred_final": "clip(predicted_duration_min, 3, 25)"
+  },
+  "column_names": [
+    "vendor_id",
+    "pickup_datetime",
+    "dropoff_datetime",
+    "passenger_count",
+    "payment_type",
+    "trip_distance",
+    "pickup_longitude",
+    "pickup_latitude",
+    "rate_code",
+    "store_and_fwd_flag",
+    "dropoff_longitude",
+    "dropoff_latitude",
+    "fare_amount",
+    "surcharge",
+    "mta_tax",
+    "tip_amount",
+    "tolls_amount",
+    "total_amount",
+    "trip_duration_min",
+    "trip_speed_mph",
+    "__dropoff_latitude",
+    "__pickup_latitude",
+    "__dropoff_longitude",
+    "__pickup_longitude",
+    "pickup_time",
+    "pickup_day",
+    "pickup_month",
+    "pickup_is_weekend",
+    "arc_distance",
+    "direction_angle",
+    "PCA_pickup_0",
+    "PCA_pickup_1",
+    "PCA_dropoff_0",
+    "PCA_dropoff_1",
+    "pickup_time_x",
+    "pickup_time_y",
+    "pickup_day_x",
+    "pickup_day_y",
+    "pickup_month_x",
+    "pickup_month_y",
+    "direction_angle_x",
+    "direction_angle_y",
+    "standard_scaled_arc_distance",
+    "predicted_duration_min",
+    "pred_final"
+  ],
+  "renamed_columns": [
+    [
+      "dropoff_latitude",
+      "__dropoff_latitude"
+    ],
+    [
+      "pickup_latitude",
+      "__pickup_latitude"
+    ],
+    [
+      "dropoff_longitude",
+      "__dropoff_longitude"
+    ],
+    [
+      "pickup_longitude",
+      "__pickup_longitude"
+    ]
+  ],
+  "variables": {
+    "pi": 3.141592653589793,
+    "e": 2.718281828459045,
+    "km_in_au": 149597870.7,
+    "seconds_per_year": 31557600,
+    "var_time_delta": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_1_1": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_2": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_2": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_3": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_3": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_4": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_4": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_5": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_5": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_6": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_6": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_7": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_7": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_8": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_8": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_9": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_9": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_10": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_10": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_11": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_11": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_12": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_12": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_13": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    },
+    "var_time_delta_1_13": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "h"
+      }
+    },
+    "var_time_delta_14": {
+      "type": "timedelta64",
+      "data": {
+        "value": 1,
+        "unit": "m"
+      }
+    }
+  },
+  "functions": {
+    "_jit": {
+      "cls": "vaex.expression.FunctionSerializableNumba",
+      "state": {
+        "expression": "((2 * arctan2(sqrt(((sin(((((dropoff_longitude - pickup_longitude) / 2) * 3.141592653589793) / 180)) ** 2) + ((cos(((pickup_longitude * 3.141592653589793) / 180)) * cos(((dropoff_longitude * 3.141592653589793) / 180))) * (sin(((((dropoff_latitude - pickup_latitude) / 2) * 3.141592653589793) / 180)) ** 2)))), sqrt((1 - ((sin(((((dropoff_longitude - pickup_longitude) / 2) * 3.141592653589793) / 180)) ** 2) + ((cos(((pickup_longitude * 3.141592653589793) / 180)) * cos(((dropoff_longitude * 3.141592653589793) / 180))) * (sin(((((dropoff_latitude - pickup_latitude) / 2) * 3.141592653589793) / 180)) ** 2))))))) * 3958.8)",
+        "arguments": [
+          "dropoff_longitude",
+          "dropoff_latitude",
+          "pickup_longitude",
+          "pickup_latitude"
+        ],
+        "argument_dtypes": [
+          "float32",
+          "float32",
+          "float32",
+          "float32"
+        ],
+        "return_dtype": "float32",
+        "verbose": false
+      }
+    },
+    "_jit_1": {
+      "cls": "vaex.expression.FunctionSerializableNumba",
+      "state": {
+        "expression": "rad2deg(arctan2((dropoff_longitude - pickup_longitude), (dropoff_latitude - pickup_latitude)))",
+        "arguments": [
+          "pickup_longitude",
+          "dropoff_longitude",
+          "dropoff_latitude",
+          "pickup_latitude"
+        ],
+        "argument_dtypes": [
+          "float32",
+          "float32",
+          "float32",
+          "float32"
+        ],
+        "return_dtype": "float32",
+        "verbose": false
+      }
+    },
+    "incremental_prediction_function": {
+      "cls": "vaex.ml.sklearn.IncrementalPredictor",
+      "state": {
+        "batch_size": 11000000,
+        "features": [
+          "PCA_pickup_0",
+          "PCA_pickup_1",
+          "PCA_dropoff_0",
+          "PCA_dropoff_1",
+          "standard_scaled_arc_distance",
+          "pickup_time_x",
+          "pickup_day_x",
+          "pickup_month_x",
+          "direction_angle_x",
+          "pickup_time_y",
+          "pickup_day_y",
+          "pickup_month_y",
+          "direction_angle_y",
+          "pickup_is_weekend"
+        ],
+        "model": "gANjc2tsZWFybi5saW5lYXJfbW9kZWwuc3RvY2hhc3RpY19ncmFkaWVudApTR0RSZWdyZXNzb3IK\ncQApgXEBfXECKFgEAAAAbG9zc3EDWAwAAABzcXVhcmVkX2xvc3NxBFgHAAAAcGVuYWx0eXEFWAIA\nAABsMnEGWA0AAABsZWFybmluZ19yYXRlcQdYCAAAAGNvbnN0YW50cQhYBwAAAGVwc2lsb25xCUc/\nuZmZmZmZmlgFAAAAYWxwaGFxCkc/Gjbi6xxDLVgBAAAAQ3ELRz/wAAAAAAAAWAgAAABsMV9yYXRp\nb3EMRz/DMzMzMzMzWA0AAABmaXRfaW50ZXJjZXB0cQ2IWAcAAABzaHVmZmxlcQ6IWAwAAAByYW5k\nb21fc3RhdGVxD05YBwAAAHZlcmJvc2VxEEsAWAQAAABldGEwcRFHPxo24uscQy1YBwAAAHBvd2Vy\nX3RxEkc/0AAAAAAAAFgOAAAAZWFybHlfc3RvcHBpbmdxE4lYEwAAAHZhbGlkYXRpb25fZnJhY3Rp\nb25xFEc/uZmZmZmZmlgQAAAAbl9pdGVyX25vX2NoYW5nZXEVSwVYCgAAAHdhcm1fc3RhcnRxFolY\nBwAAAGF2ZXJhZ2VxF4lYCAAAAG1heF9pdGVycRhN6ANYAwAAAHRvbHEZRz9QYk3S8an8WAUAAABj\nb2VmX3EaY251bXB5LmNvcmUubXVsdGlhcnJheQpfcmVjb25zdHJ1Y3QKcRtjbnVtcHkKbmRhcnJh\neQpxHEsAhXEdQwFicR6HcR9ScSAoSwFLDoVxIWNudW1weQpkdHlwZQpxIlgCAAAAZjhxI0sASwGH\ncSRScSUoSwNYAQAAADxxJk5OTkr/////Sv////9LAHRxJ2KJQ3D9rPFOoUAlwLtQrsmfTipAOvLk\nwWtEK8CKSzepNOISQJ4QoaKZjwlAy7NQacvG8r/UOS9TEz/Zv8C6R45nd74/4aRuecNgw7+hO7GO\noyj2v5c/Zo6pt7S/VXzI51Si5b+wHRocGojNv1REZr3Pnd6/cSh0cSliWAoAAABpbnRlcmNlcHRf\ncSpoG2gcSwCFcStoHodxLFJxLShLAUsBhXEuaCWJQwhZV0fhkMklQHEvdHEwYlgCAAAAdF9xMUdB\nyDlMagAAAFgHAAAAbl9pdGVyX3EySwFYEAAAAF9za2xlYXJuX3ZlcnNpb25xM1gGAAAAMC4yMS4z\ncTR1Yi4=\n",
+        "num_epochs": 1,
+        "partial_fit_kwargs": {},
+        "prediction_name": "predicted_duration_min",
+        "shuffle": false,
+        "target": "trip_duration_min"
+      }
+    }
+  },
+  "selections": {
+    "__filter__": {
+      "type": "expression",
+      "boolean_expression": "((((((((__pickup_longitude > -74.05) & (__pickup_longitude < -73.75)) & (__pickup_latitude > 40.58)) & (__pickup_latitude < 40.9)) & (__dropoff_longitude > -74.05)) & (__dropoff_longitude < -73.75)) & (__dropoff_latitude > 40.58)) & (__dropoff_latitude < 40.9))",
+      "mode": "and",
+      "previous_selection": {
+        "type": "expression",
+        "boolean_expression": "((trip_speed_mph > 1) & (trip_speed_mph < 60))",
+        "mode": "and",
+        "previous_selection": {
+          "type": "expression",
+          "boolean_expression": "((trip_duration_min > 3) & (trip_duration_min < 25))",
+          "mode": "and",
+          "previous_selection": {
+            "type": "expression",
+            "boolean_expression": "((trip_distance > 0) & (trip_distance < 7))",
+            "mode": "and",
+            "previous_selection": {
+              "type": "expression",
+              "boolean_expression": "((passenger_count > 0) & (passenger_count < 7))",
+              "mode": "and",
+              "previous_selection": null
+            }
+          }
+        }
+      }
+    }
+  },
+  "ucds": {},
+  "units": {},
+  "descriptions": {},
+  "description": "file exported by vaex, by user jovan, on date 2019-07-03 12:36:00.430560, from source /Users/jovan/Work/vaex-dev/vaex-demo-taxi/data/yellow_taxi_2009_2015_f32.hdf5previous description:\nfile exported by vaex, by user jovan, on date 2019-05-02 19:16:24.798101, from source /Users/jovan/Work/vaex-dev/vaex-demo-taxi/data/yellow_taxi_2009_2015.hdf5previous description:\nfile exported by vaex, by user jovan, on date 2019-04-13 02:31:19.400663, from source /Volumes/Elements-U/Jovan/vaex-datasets/nyc_taxi/yellow_taxi_2009.hdf5-/Volumes/Elements-U/Jovan/vaex-datasets/nyc_taxi/yellow_taxi_2010.hdf5-/Volumes/Elements-U/Jovan/vaex-datasets/nyc_taxi/yellow_taxi_2011.hdf5-/Volumes/Elements-U/Jovan/vaex-datasets/nyc_taxi/yellow_taxi_2012.hdf5-/Volumes/Elements-U/Jovan/vaex-datasets/nyc_taxi/yellow_taxi_2013.hdf5-/Volumes/Elements-U/Jovan/vaex-datasets/nyc_taxi/yellow_taxi_2014.hdf5-/Volumes/Elements-U/Jovan/vaex-datasets/nyc_taxi/yellow_taxi_2015.hdf5",
+  "active_range": [
+    0,
+    1026944937
+  ],
+  "column_aliases": {}
+}
