@@ -1,8 +1,8 @@
 # How to deploy a model on the "classical" AI Platform
 
-### Specify environmental variables
+Specify environmental variables
 
-```
+```bash
 BUCKET=gs://vaex-data
 MODEL=har
 REGION=global
@@ -14,22 +14,30 @@ PREDICTION_PACKAGE_PATH=gs://vaex-data/deployments/vaex_predictor-0.0.0.tar.gz
 PREDICTION_CLASS=predictor.VaexPredictor
 ```
 
-### Create a Python package out of the vaex_predictor module
-`python setup.py sdist --formats=gztar`
+Create a Python package out of the vaex_predictor module
 
-### Copy the package Google Cloud Storage
-`gsutil cp dist/vaex_predictor-0.0.0.tar.gz $BUCKET/deployments/`
-
-### Create a \_model\_ on the AI Platform
+```bash
+python setup.py sdist --formats=gztar
 ```
+
+Copy the package Google Cloud Storage
+
+```bash
+gsutil cp dist/vaex_predictor-0.0.0.tar.gz $BUCKET/deployments/
+```
+
+Create a \_model\_ on the AI Platform
+
+```bash
 gcloud beta ai-platform models create $MODEL \
   --region=$REGION \
   --enable-logging \
   --enable-console-logging
 ```
 
-### Create a model \_version\_:
-```
+Create a model \_version\_:
+
+```bash
 gcloud beta ai-platform versions create $VERSION \
     --model=$MODEL \
     --region=$REGION \
@@ -40,42 +48,51 @@ gcloud beta ai-platform versions create $VERSION \
     --prediction-class=$PREDICTION_CLASS
 ```
 
-### Send online prediction requests
-`gcloud ai-platform predict --model=$MODEL --version=$VERSION --json-instances=input_dict.json --region=$REGION`
-`gcloud ai-platform predict --model=$MODEL --version=$VERSION --json-instances=input_list.json --region=$REGION`
+Send online prediction requests
 
-### Delete a model version
-`gcloud ai-platform versions delete $VERSION --model=$MODEL --region=$REGION`
+```bash
+gcloud ai-platform predict --model=$MODEL --version=$VERSION --json-instances=input_dict.json --region=$REGION
+gcloud ai-platform predict --model=$MODEL --version=$VERSION --json-instances=input_list.json --region=$REGION
+```
 
-### Delete the model
-`gcloud ai-platform models delete $MODEL --region=$REGION`
+Delete a model version
 
-# How to deploy a model on the Unified AI Platform using a predefined container
+```bash
+gcloud ai-platform versions delete $VERSION --model=$MODEL --region=$REGION
+```
+
+Delete the model
+
+```bash
+gcloud ai-platform models delete $MODEL --region=$REGION
+```
+
+# How to deploy a model on the Unified AI Platform
+
+### Using a predefined container
 
 This is not supported.
 
 
-# How to deploy a model on the Unified AI Platform using a custom container
+### Using a custom container
 
+Create an image on Container Registry
 
-### Create an image on Container Registry
-
+```bash
 PROJECTID=
 IMAGE_NAME=predict-image
 CUSTOM_CONTAINER_IMAGE_URI=gcr.io/$PROJECTID/$IMAGE_NAME
 
-```
 gcloud builds submit --tag $CUSTOM_CONTAINER_IMAGE_URI
 ```
 
-### Upload a model to the platform - in this case it is a container
+Upload a model to the platform - in this case it is a container
 
+```bash
 REGION=europe-west4
 MODEL_NAME=har_model
 PATH_TO_STATE_FILE=gs://vaex-data-europe-west4/models/har_phones_accelerometer_2021-03-22T19:15:06
 
-
-```
 gcloud beta ai models upload \
   --region=$REGION \
   --display-name=$MODEL_NAME \
@@ -86,26 +103,27 @@ gcloud beta ai models upload \
   --container-predict-route=/predict
 ```
 
-### Create an endpoint
+Create an endpoint
 
+```bash
 ENDPOINT_NAME=har_model_endpoint
 
-```
 gcloud beta ai endpoints create \
   --region=$REGION \
   --display-name=$ENDPOINT_NAME
 ```
 
-### Get the model and endpoint IDs
-
+Get the model and endpoint IDs.
 These can be found on the Google Cloud Console once the resources are up and running.
 
+```bash
 MODEL_ID=
 ENDPOINT_ID=
-
-### Deploy the model
-
 ```
+
+Deploy the model
+
+```bash
 gcloud beta ai endpoints deploy-model $ENDPOINT_ID \
   --region=$REGION \
   --model=$MODEL_ID \
@@ -118,32 +136,35 @@ gcloud beta ai endpoints deploy-model $ENDPOINT_ID \
   --enable-container-logging
 ```
 
-### Send a request
+Send a request
 
+```bash
 INPUT_DATA_FILE=input_json.json
 
-```
 curl -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "Content-Type: application/json" https://${REGION}-aiplatform.googleapis.com/v1alpha1/projects/${PROJECT_ID}/locations/us-central1/endpoints/${ENDPOINT_ID}:predict -d "@${INPUT_DATA_FILE}"
 ```
 
-### Undeploy the model
+To undeploy a model, you need to get the deployed model id.
 
-Find the deployed model id with this command
-`gcloud beta ai models list --region=$REGION | grep deployed`
+```bash
+gcloud beta ai models list --region=$REGION | grep deployed
 
 DEPLOYED_MODEL_ID=
 
-```
 gcloud beta ai endpoints undeploy-model $ENDPOINT_ID \
   --project=$PROJECTID  \
   --region=$REGION \
   --deployed-model-id=$DEPLOYED_MODEL_ID
 ```
 
-### Delete the endpoint
+Delete the endpoint
 
-`gcloud beta ai endpoints delete $ENDPOINT_ID --region=$REGION`
+```bash
+gcloud beta ai endpoints delete $ENDPOINT_ID --region=$REGION
+```
 
-### Delete the model
+Delete the model
 
-`gcloud beta ai models delete $MODEL_ID --region=$REGION`
+```bash
+gcloud beta ai models delete $MODEL_ID --region=$REGION
+```
