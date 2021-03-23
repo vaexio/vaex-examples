@@ -14,7 +14,7 @@ RUNTIME_VERSION=2.3
 PYTHON_VERSION=3.7
 
 # Path to the directory containing the model state file
-ORIGIN=gs://vaex-data/models/har_phones_accelerometer_2021-03-19T21:37:37
+ORIGIN=gs://vaex-data/models/har_phones_accelerometer_2021-03-22T19:15:06
 
 # Path to prediction module
 PREDICTION_PACKAGE_PATH=gs://vaex-data/deployments/vaex_predictor-0.0.0.tar.gz
