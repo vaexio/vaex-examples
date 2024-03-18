@@ -9,7 +9,7 @@ DEPENDENCIES = ['vaex-core==4.1.0',
                 'lightgbm==3.1.1',
                 'cloudpickle==1.6.0',
                 'gcsfs==0.7.1',
-                'astropy==4.1']
+                'astropy==5.3.3']
 
 setup(
     name='vaex_predictor',
